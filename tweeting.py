@@ -1,14 +1,14 @@
-import json
-
 import my_key
 from twitter4py import twitter4py
 
 if __name__ == "__main__":
-    t4p = twitter4py(my_key.CONS_KEY,
+    t4p = twitter4py(
+                     my_key.CONS_KEY,
                      my_key.CONS_KEY_SEC,
                      my_key.ACC_TOK,
-                     my_key.ACC_TOK_SEC )
-    
+                     my_key.ACC_TOK_SEC
+                    )
+
     while True:
         tweet_str = ""
         print("---------------------------------------------------------")
@@ -19,10 +19,10 @@ if __name__ == "__main__":
                 break
             else:
                 tweet_str += inp + "\n"
-        
+
         if tweet_str == "":
             break
-        
-        t4p.request("POST","statuses/update",{"status":tweet_str})
-        
+
+        t4p.request("POST", "statuses/update", {"status": tweet_str})
+
         print()
