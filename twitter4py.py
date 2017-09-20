@@ -111,12 +111,11 @@ class twitter4py:
     def StreamNewResponse(self):
         jlist = []
         for i in range(len(self.queue)):
-            j = self.queue.popleft()
-            jl = json.loads(j)
+            j = json.loads(self.queue.popleft())
             
             #最初に飛んでくるfriendsリストは読まない
-            if not "friends" in jl:
-                jlist.append(json.loads(j))
+            if not "friends" in j:
+                jlist.append(j)
         return jlist
         
     #スレッドキル用、ただしむりやりバツで閉じたほうが早い(req.iter_linesの関係上)
