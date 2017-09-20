@@ -8,6 +8,7 @@ import calendar
 
 URL_BASE = "https://api.twitter.com/1.1/"
 FOLLOW_DEFAULT = -1
+CONNECTION_RETRY_INTERVAL = 3
 
 # created_at が +0000(UTC)なのを +0900(JST)に治す
 def ConvUTC2JST(created_at):
@@ -76,6 +77,7 @@ class twitter4py:
             try:
                 req = requests.get("https://userstream.twitter.com/1.1/user.json",
                                 auth=self.auth_info,stream=True,params=self.qs)
+                print("Connecting User Stream")
 
                 for d in req.iter_lines():
                     if not d:
@@ -102,10 +104,10 @@ class twitter4py:
             #通信の確立失敗
             except requests.exceptions.ConnectionError:
                 print("connection lost streaming api, Retry after 10 sec")
-                time.sleep(10)
+                time.sleep(CONNECTION_RETRY_INTERVAL)
             except requests.exceptions.Timeout:
                 print("Connection Timeout, Retry after 10 sec")
-                time.sleep(10)
+                time.sleep(CONNECTION_RETRY_INTERVAL)
     
     #メインからはこの関数を介してレスポンスを取得する
     def StreamNewResponse(self):
@@ -113,9 +115,10 @@ class twitter4py:
         for i in range(len(self.queue)):
             j = json.loads(self.queue.popleft())
             
-            #最初に飛んでくるfriendsリストは読まない
+            #最初に飛んでくるfriendsリストとdeleteクエリは読まない
             if not "friends" in j:
-                jlist.append(j)
+                if not "delete" in j:
+                    jlist.append(j)
         return jlist
         
     #スレッドキル用、ただしむりやりバツで閉じたほうが早い(req.iter_linesの関係上)
