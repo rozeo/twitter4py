@@ -1,5 +1,6 @@
 # coding: utf-8
 
+import os
 import json
 import time
 import sys
@@ -48,26 +49,46 @@ class gekitotsuChecker:
 
 
 if __name__ == '__main__':
-    t4p = twitter4py(my_key.CONS_KEY, my_key.CONS_KEY_SEC, my_key.ACC_TOK, my_key.ACC_TOK_SEC)
+    t4p = twitter4py(
+                     my_key.CONS_KEY,
+                     my_key.CONS_KEY_SEC,
+                     my_key.ACC_TOK,
+                     my_key.ACC_TOK_SEC
+                    )
     j = t4p.CreateUserStreaming({"with": "followings", "replies": "all"})
     checker = gekitotsuChecker(t4p)
     print("---------------------------------------------------------")
 
+    er_cnt = 0
     while True:
         js = t4p.StreamNewResponse()
         if js:
             for j in js:
+                # favoriteイベントを無視する(.name等のキーを保持していない)
+                if "event" in j:
+                    continue
+                
                 try:
                     print("[%s] %s (%s)\n%s\n" %
                           (ConvUTC2JST(j['created_at']), j["user"]["name"], j["user"]["screen_name"], j['text']))
                     checker.CheckGekitotsu(j)
-                    print("---------------------------------------------------------")
 
                 except KeyError:
-                    print(sys.exc_info())
-                    er_log = open("log/error_query[%s].log" % (j['id']), "w")
+                    while True:
+                        file_name = "log/error_query[%06d].log" % (er_cnt)
+                        if os.path.isFile(file_name):
+                            er_cnt += 1
+                        else:
+                            break
+
+                    er_log = open(file_name, "w")
+                    er_log.write(str(sys.exc_info()) + "\n")
                     er_log.write(json.dumps(j, indent=4, separators=(",", ':')))
                     er_log.close()
+                    er_cnt += 1
+                    
+                    print("KeyError query, saved to %s" % (file_name))
+                print("---------------------------------------------------------")
 
         time.sleep(STREAM_GET_INTERVAL)
     t4p.kill()
