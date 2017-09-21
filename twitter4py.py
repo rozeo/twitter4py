@@ -78,6 +78,7 @@ class twitter4py:
         self.queue = collections.deque()
 
         self.stream.start()
+        return 0
 
     # user streaming 取得スレッド関数
     def __get_tweet(self):

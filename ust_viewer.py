@@ -55,7 +55,10 @@ if __name__ == '__main__':
                      my_key.ACC_TOK,
                      my_key.ACC_TOK_SEC
                     )
-    j = t4p.CreateUserStreaming({"with": "followings", "replies": "all"})
+    res = t4p.CreateUserStreaming({"with": "followings", "replies": "all"})
+    if res < 0:
+        print("initialize rror")
+
     checker = gekitotsuChecker(t4p)
     print("---------------------------------------------------------")
 
