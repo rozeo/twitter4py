@@ -1,4 +1,5 @@
 # coding: utf-8
+#!/home/roz-dev/bin/python3.6
 
 import os
 import json
@@ -9,7 +10,7 @@ from twitter4py import twitter4py
 from twitter4py import ConvUTC2JST
 import re
 
-STREAM_GET_INTERVAL = 3
+STREAM_GET_INTERVAL = 0.5
 
 
 class gekitotsuChecker:
@@ -21,6 +22,7 @@ class gekitotsuChecker:
 
         self.tid = ""
         self.ts_ms = 0
+        self.file_name = "gekitotsuDetected.log"
 
     def CheckGekitotsu(self, jq):
 
@@ -33,20 +35,28 @@ class gekitotsuChecker:
                 return
 
             tm = (gmst - self.ts_ms) / 1000.0
-            message = "@%s 追突するまでに %.4f秒 かかりました" % (jq['user']['screen_name'], tm)
+            message = "@%s 追突するまでに %.3f秒 かかりました" % (jq['user']['screen_name'], tm)
 
             t4p.request("POST", "statuses/update",
                         {"status": message, "in_reply_to_status_id": jq['id']})
             print("detected gekitotsu[id:%d]" % (jq['id']))
 
+            fp = open(self.file_name, "a")
+            fp.write("[%s] detected gekitotsu [twid:%d]\ntweeted: %s\n\n" %
+                     (ConvUTC2JST(jq['created_at']), jq['id'], message))
+            fp.close()
+
         # @rozeo_s のツイートのみ対象
         # しごおわを検出したら時刻とツイートidを記録しておく
         elif re.search(self.shigoowa, jq['text']) and re.search(r"rozeo_s", jq['user']['screen_name']):
-
-            self.tid   = jq['id_str']
-            self.ts_ms = int(jq['timestamp_ms'])
-            print("detected shigoowa[id:%s]" % (jq['id_str']))
-
+            if len(self.shigoowa) == len(jq['text']):
+                self.tid   = jq['id_str']
+                self.ts_ms = int(jq['timestamp_ms'])
+                fp = open(self.file_name, "a")
+                print("detected shigoowa[id:%s]" % (jq['id_str']))
+                fp.write("[%s] detected shigoowa [twid:%d]\n" %
+                        (ConvUTC2JST(jq['created_at']), jq['id']))
+                fp.close()
 
 if __name__ == '__main__':
     t4p = twitter4py(
@@ -70,10 +80,10 @@ if __name__ == '__main__':
                 # favoriteイベントを無視する(.name等のキーを保持していない)
                 if "event" in j:
                     continue
-                
+
                 try:
                     print("[%s] %s (%s)\n%s\n" %
-                          (ConvUTC2JST(j['created_at']), j["user"]["name"], j["user"]["screen_name"], j['text']))
+                          (ConvUTC2JST(j["created_at"]), j["user"]["name"], j["user"]["screen_name"], j["text"]))
                     checker.CheckGekitotsu(j)
 
                 except KeyError:
@@ -89,7 +99,7 @@ if __name__ == '__main__':
                     er_log.write(json.dumps(j, indent=4, separators=(",", ':')))
                     er_log.close()
                     er_cnt += 1
-                    
+
                     print("KeyError query, saved to %s" % (file_name))
                 print("---------------------------------------------------------")
 

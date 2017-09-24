@@ -1,4 +1,5 @@
 # coding: utf-8
+#!/home/roz-dev/bin/python3.6
 
 # branch分けしました
 
@@ -89,10 +90,10 @@ class twitter4py:
                 print("Connecting User Stream")
 
                 for d in req.iter_lines():
-                    if not d:
-                        continue
                     if self.kill_thread.is_set():
                         return
+                    if not d:
+                        continue
                     d = d.decode("utf-8")
                     if re.match("friends", d):
                         continue
