@@ -19,7 +19,7 @@ make class instance with COMSUMER_KEY, COMSUMER_SECRET_KEY, ACCESS_TOKEN, ACCESS
 
 ### Create User Streaming
 #### Create Streaming
-    t4p.CreateUserStreaming({options})
+    t4p.CreateUserStreaming({options})
 
 #### Get Streaming Query
     t4p.StreamNewResponse() # return type list
