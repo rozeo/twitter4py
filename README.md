@@ -9,6 +9,9 @@ make class instance with COMSUMER_KEY, COMSUMER_SECRET_KEY, ACCESS_TOKEN, ACCESS
     t4p = twitter4py.twitter4py(COMSUMER_KEY, COMSUMER_SECRET_KEY, ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
     
 ### Request to REST APIs
+    t4p.request(request_type, endpoint, parameter)
+    # request_type is "GET" or "POST"
+    
 #### GET Request
     t4p.request("GET", "account/verify_credentials")
     
