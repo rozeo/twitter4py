@@ -1,4 +1,4 @@
-#!/home/roz-dev/bin/python3.6
+#!/bin/python3.6
 # coding: utf-8
 import my_key
 from twitter4py import twitter4py
