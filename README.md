@@ -26,5 +26,5 @@ make class instance with COMSUMER_KEY, COMSUMER_SECRET_KEY, ACCESS_TOKEN, ACCESS
     t4p.StreamNewResponse() # return type list
     
     # ex.
-    # for json in t4p.StreamBewResponse():
+    # for json in t4p.StreamNewResponse():
     #   print(json["text"])
