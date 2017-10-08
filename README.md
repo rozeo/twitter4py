@@ -16,3 +16,7 @@ make class instance with COMSUMER_KEY, COMSUMER_SECRET_KEY, ACCESS_TOKEN, ACCESS
 #### POST Request
 
     t4p.request("POST", "statuses/update", {"status": "tweet text"})
+
+### Create User Streaming
+#### Create Streaming
+    t4p.CreateUserStream({options})
