@@ -10,16 +10,21 @@ make class instance with COMSUMER_KEY, COMSUMER_SECRET_KEY, ACCESS_TOKEN, ACCESS
     
 ### Request to REST APIs
 #### GET Request
-    
     t4p.request("GET", "account/verify_credentials")
     
 #### POST Request
-
     t4p.request("POST", "statuses/update", {"status": "tweet text"})
 
 ### Create User Streaming
 #### Create Streaming
     t4p.CreateUserStreaming({options})
+    
+    # ex.
+    # t4p.CreateUserStreaming({"with": "followings", "replies": "all"})
 
 #### Get Streaming Query
     t4p.StreamNewResponse() # return type list
+    
+    # ex.
+    # for json in t4p.StreamBewResponse():
+    #   print(json["text"])
